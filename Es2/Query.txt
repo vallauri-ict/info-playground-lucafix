@@ -1,0 +1,65 @@
+1) SELECT Nome FROM Sale WHERE Citta = 'Pisa'
+2) SELECT Titolo FROM Film WHERE Regista = 'F. Fellini' AND AnnoProduzione > 1960
+3) SELECT Titolo, Durata FROM Film WHERE Genere = 'Fantascienza' AND AnnoProduzione > 1960 AND (Nazionalita = 'Francese' OR Nazionalita = 'Giapponese')
+4) SELECT Titolo FROM Film WHERE (Genere = 'Fantascienza' AND Nazionalita = 'Giapponese' AND AnnoProduzione > 1960) OR Nazionalita = 'Francese'
+5) SELECT Titolo FROM Film WHERE Regista = (SELECT Regista FROM Film WHERE Titolo = 'Casablanca')
+6) SELECT Titolo, Genere FROM Film f, Proiezioni p WHERE p.CodFilm = f.CodFilm AND p.DataProiezione = '25/12/2004'
+7) SELECT DISTINCT Titolo, Genere 
+FROM Film f, Proiezioni p, Sale s 
+WHERE p.CodFilm = f.CodFilm 
+AND p.DataProiezione = '25/12/2004' 
+AND p.CodSala = s.CodSala 
+AND s.Citta = 'Napoli'
+
+8) 
+SELECT DISTINCT s.Nome
+FROM Film f, Proiezioni p, Sale s, Attori a, Recita r
+WHERE p.DataProiezione = CAST('2004-12-25' AS date)
+AND f.CodFilm=r.CodFilm
+AND f.CodFilm= p.CodFilm
+AND p.CodSala=s.CodSala
+AND a.CodAttore=r.CodAttore
+AND a.Nome='R.Williams'
+AND s.Citta='Napoli'
+
+9)
+SELECT f.Titolo
+FROM Film f, Attori a, Recita r
+WHERE (a.Nome='Mastroianni' OR a.Nome='Loren')
+AND r.CodFilm=f.CodFilm
+AND r.CodAttore=a.CodAttore
+
+10)
+SELECT f.Titolo
+FROM Film f, Attori a, Recita r
+WHERE (a.Nome='Mastroianni' AND a.Nome='Loren')
+AND r.CodFilm=f.CodFilm
+AND r.CodAttore=a.CodAttore
+
+11)
+SELECT f.Titolo, a.Nome
+FROM Attori a, Film f, Recita r
+WHERE a.Nazionalita = 'Francese'
+AND a.CodAttore = r.CodAttore
+AND f.CodFilm = r.CodFilm
+
+12)
+SELECT f.Titolo, s.Nome
+FROM Film f, Sala s, Proiezioni p
+WHERE p.DataProiezione = CAST('2005-01-12' AS date) AND s.Citta = 'Pisa'
+AND f.CodFilm = p.CodFilm
+AND s.CodSala = p.CodSala
+
+13)
+SELECT COUNT(s.CodSala)
+FROM Sale s
+WHERE s.posti > 60 AND s.Citta = 'Pisa'
+
+14)
+SELECT SUM(s.Posti)
+FROM Sale s
+WHERE s.Citta = 'Pisa'
+
+15)
+SELECT s.Citta, COUNT(s.CodSala)
+FROM Sale s
