@@ -31,10 +31,15 @@ AND r.CodAttore=a.CodAttore
 
 10)
 SELECT f.Titolo
-FROM Film f, Attori a, Recita r
-WHERE (a.Nome='Mastroianni' AND a.Nome='Loren')
-AND r.CodFilm=f.CodFilm
-AND r.CodAttore=a.CodAttore
+FROM Film f
+WHERE 'Mastroianni' IN (SELECT a.Nome
+FROM Attori a, Recita r
+WHERE r.CodFilm=f.CodFilm
+AND r.CodAttore=a.CodAttore)
+AND 'Loren' IN (SELECT a.Nome
+FROM Attori a, Recita r
+WHERE r.CodFilm=f.CodFilm
+AND r.CodAttore=a.CodAttore)
 
 11)
 SELECT f.Titolo, a.Nome
@@ -61,5 +66,112 @@ FROM Sale s
 WHERE s.Citta = 'Pisa'
 
 15)
-SELECT s.Citta, COUNT(s.CodSala)
+SELECT s.Citta, COUNT(*)
 FROM Sale s
+GROUP BY s.Citta
+
+16)
+SELECT s.Citta, COUNT(*) as Numero_Sale
+FROM Sale s
+WHERE s.Posti>60
+GROUP BY s.Citta
+
+17)
+SELECT f.Regista, COUNT(*)
+FROM Film f
+WHERE f.AnnoProduzione>1990
+GROUP BY f.Regista
+
+18)
+SELECT f.Regista, SUM(p.Incasso)
+FROM Film f, Proiezioni p 
+WHERE f.CodFilm=p.CodFilm
+GROUP BY f.Regista
+
+19)
+SELECT f.Titolo, count(*), sum(p.Incasso)
+FROM Film f, Proiezioni p, Sale s
+WHERE f.CodFilm=p.CodFilm
+AND s.CodSala=p.CodSala
+AND s.Citta='Pisa'
+AND f.Regista='Spielberg'
+GROUP BY f.CodFilm, f.Titolo
+
+20)
+SELECT f.Regista, a.Nome, count(*)
+FROM Film f, Attori a, Recita r
+WHERE r.CodFilm=f.CodFilm
+AND r.CodAttore=a.CodAttore
+GROUP BY f.Regista, a.CodAttore, a.Nome
+
+21)
+SELECT f.Regista, f.Titolo
+FROM Film f, Recita r
+WHERE r.CodFilm=f.CodFilm
+GROUP BY f.CodFilm, f.Regista, f.Titolo
+HAVING COUNT(*)<6
+
+?)
+SELECT f.Titolo, sum(p.Incasso)
+FROM Film f, Proiezioni p
+WHERE p.CodFilm=f.CodFilm
+AND f.Genere='Fantascienza'
+GROUP BY f.CodFilm,f.Titolo
+HAVING min(p.DataProiezione)>=CAST('2001-01-01' as date)
+
+30)
+SELECT *
+FROM Film f
+WHERE not exists(SELECT * FROM Proiezioni p
+WHERE p.CodFilm=f.CodFilm
+AND p.Incasso>500)
+
+31)
+
+SELECT *
+FROM Film f
+WHERE not exists(SELECT * FROM Proiezioni p
+WHERE p.CodFilm=f.CodFilm
+AND p.Incasso<=500)
+
+32)
+SELECT *
+FROM Attori a
+WHERE a.Nazionalita='Italia'
+AND not exists(SELECT * FROM Film f, Recita r
+WHERE r.CodFilm=f.CodFilm
+AND a.CodAttore=r.CodAttore
+AND f.Regista='Fellini')
+
+33)
+SELECT *
+FROM Film f
+WHERE f.Regista='Fellini'
+AND not exists(SELECT * FROM Attori a, Recita r
+WHERE r.CodFilm=f.CodFilm
+AND a.CodAttore=r.CodAttore
+AND a.Nazionalita='Italia')
+
+34)
+SELECT * 
+FROM Film f
+WHERE not exists (SELECT * FROM Recita r
+WHERE r.CodFilm=f.CodFilm)
+
+35)
+SELECT * 
+FROM Attori a
+WHERE not exists (SELECT * FROM Film f, Recita r
+WHERE a.CodAttore=r.CodAttore
+AND f.CodFilm=r.CodFilm
+AND f.AnnoProduzione<1960
+AND f.Regista<>'Fellini')
+
+36)
+SELECT * 
+FROM Attori a
+WHERE not exists (SELECT * FROM Film f, Recita r
+WHERE a.CodAttore=r.CodAttore
+AND f.CodFilm=r.CodFilm
+AND f.AnnoProduzione>1960
+AND f.Regista='Fellini')
